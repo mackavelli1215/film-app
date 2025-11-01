@@ -17,5 +17,6 @@ urlpatterns = [
     
     # Main app URLs
     path('projects/', include('projects.urls')),
+    path('grants/', include('grants.urls')),
     path('agents/', include('agents.urls')),
 ]

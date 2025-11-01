@@ -1,0 +1,293 @@
+<!-- Grant Detail Modal -->
+<div
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+  id="grant-modal"
+>
+  <div
+    class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white"
+  >
+    <!-- Modal Header -->
+    <div
+      class="flex items-center justify-between pb-4 border-b border-gray-200"
+    >
+      <div>
+        <h3 class="text-lg font-medium text-gray-900">{{ grant.title }}</h3>
+        <p class="text-sm text-gray-500">{{ grant.organization }}</p>
+      </div>
+      <button
+        type="button"
+        onclick="document.getElementById('grant-modal').remove()"
+        class="text-gray-400 hover:text-gray-600"
+      >
+        <span class="sr-only">Close</span>
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal Content -->
+    <div class="py-4 max-h-96 overflow-y-auto">
+      <!-- Match Information -->
+      <div class="mb-6">
+        <div class="flex items-center justify-between mb-3">
+          <h4 class="text-md font-medium text-gray-900">Match Information</h4>
+          <span
+            class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium {% if grant_match.match_quality == 'perfect' %}bg-green-100 text-green-800 {% elif grant_match.match_quality == 'excellent' %}bg-blue-100 text-blue-800 {% elif grant_match.match_quality == 'good' %}bg-yellow-100 text-yellow-800 {% else %}bg-gray-100 text-gray-800{% endif %}"
+          >
+            {{ grant_match.match_score }}% Match Quality
+          </span>
+        </div>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm text-gray-600">{{ grant_match.match_reasoning }}</p>
+        </div>
+      </div>
+
+      <!-- Grant Details -->
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- Basic Information -->
+        <div>
+          <h4 class="text-md font-medium text-gray-900 mb-3">Grant Details</h4>
+          <dl class="space-y-2">
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Deadline
+              </dt>
+              <dd class="text-sm text-gray-900">
+                {{ grant.deadline|date:"F d, Y" }}
+              </dd>
+            </div>
+
+            {% if grant.amount_min or grant.amount_max %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Amount
+              </dt>
+              <dd class="text-sm text-gray-900">
+                {% if grant.amount_min and grant.amount_max %} ${{
+                grant.amount_min|floatformat:0 }} - ${{
+                grant.amount_max|floatformat:0 }} {% elif grant.amount_min %}
+                ${{ grant.amount_min|floatformat:0 }}+ {% elif grant.amount_max
+                %} Up to ${{ grant.amount_max|floatformat:0 }} {% endif %} {{
+                grant.currency }}
+              </dd>
+            </div>
+            {% endif %}
+
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Type
+              </dt>
+              <dd class="text-sm text-gray-900">
+                {{ grant.get_grant_type_display }}
+              </dd>
+            </div>
+
+            {% if grant.funding_type %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Funding Type
+              </dt>
+              <dd class="text-sm text-gray-900">
+                {{ grant.get_funding_type_display }}
+              </dd>
+            </div>
+            {% endif %}
+          </dl>
+        </div>
+
+        <!-- Application Status -->
+        <div>
+          <h4 class="text-md font-medium text-gray-900 mb-3">
+            Application Status
+          </h4>
+          <dl class="space-y-2">
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Current Status
+              </dt>
+              <dd class="text-sm">
+                <span
+                  class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if grant_match.status == 'suggested' %}bg-gray-100 text-gray-800 {% elif grant_match.status == 'interested' %}bg-blue-100 text-blue-800 {% elif grant_match.status == 'applied' %}bg-yellow-100 text-yellow-800 {% elif grant_match.status == 'awarded' %}bg-green-100 text-green-800 {% elif grant_match.status == 'rejected' %}bg-red-100 text-red-800 {% endif %}"
+                >
+                  {{ grant_match.get_status_display }}
+                </span>
+              </dd>
+            </div>
+
+            {% if grant_match.applied_at %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Applied Date
+              </dt>
+              <dd class="text-sm text-gray-900">
+                {{ grant_match.applied_at|date:"F d, Y" }}
+              </dd>
+            </div>
+            {% endif %}
+
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Days Until Deadline
+              </dt>
+              <dd class="text-sm text-gray-900">
+                {% now "Y-m-d" as today %} {% if grant.deadline|date:"Y-m-d" >
+                today %}
+                <span class="text-orange-600 font-medium">
+                  {{ grant.deadline|timeuntil }}
+                </span>
+                {% else %}
+                <span class="text-red-600 font-medium">Expired</span>
+                {% endif %}
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <!-- Description -->
+      {% if grant.description %}
+      <div class="mb-6">
+        <h4 class="text-md font-medium text-gray-900 mb-3">Description</h4>
+        <div class="bg-gray-50 rounded-lg p-4">
+          <p class="text-sm text-gray-600">
+            {{ grant.description|linebreaks }}
+          </p>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Eligibility Criteria -->
+      {% if grant.eligibility_criteria %}
+      <div class="mb-6">
+        <h4 class="text-md font-medium text-gray-900 mb-3">
+          Eligibility Criteria
+        </h4>
+        <div class="bg-gray-50 rounded-lg p-4">
+          {% for key, value in grant.eligibility_criteria.items %}
+          <div class="flex justify-between py-1">
+            <span class="text-sm font-medium text-gray-600"
+              >{{ key|title }}:</span
+            >
+            <span class="text-sm text-gray-900">{{ value }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Application Requirements -->
+      {% if grant.application_requirements %}
+      <div class="mb-6">
+        <h4 class="text-md font-medium text-gray-900 mb-3">
+          Application Requirements
+        </h4>
+        <div class="bg-gray-50 rounded-lg p-4">
+          {% for key, value in grant.application_requirements.items %}
+          <div class="flex justify-between py-1">
+            <span class="text-sm font-medium text-gray-600"
+              >{{ key|title }}:</span
+            >
+            <span class="text-sm text-gray-900">{{ value }}</span>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- Application Notes -->
+      {% if grant_match.application_notes %}
+      <div class="mb-6">
+        <h4 class="text-md font-medium text-gray-900 mb-3">
+          Application Notes
+        </h4>
+        <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <p class="text-sm text-gray-600">
+            {{ grant_match.application_notes|linebreaks }}
+          </p>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Modal Actions -->
+    <div
+      class="flex items-center justify-between pt-4 border-t border-gray-200"
+    >
+      <div class="flex space-x-2">
+        {% if grant.url %}
+        <a
+          href="{{ grant.url }}"
+          target="_blank"
+          class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        >
+          <svg
+            class="mr-2 h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+            />
+          </svg>
+          View Grant Page
+        </a>
+        {% endif %}
+      </div>
+
+      <div class="flex space-x-3">
+        {% if grant_match.status == 'suggested' %}
+        <button
+          type="button"
+          class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+        >
+          Mark as Interested
+        </button>
+        {% elif grant_match.status == 'interested' %}
+        <button
+          type="button"
+          class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700"
+        >
+          Mark as Applied
+        </button>
+        {% endif %}
+
+        <button
+          type="button"
+          onclick="document.getElementById('grant-modal').remove()"
+          class="inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+        >
+          Close
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

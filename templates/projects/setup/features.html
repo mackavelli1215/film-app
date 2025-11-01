@@ -1,0 +1,166 @@
+{% extends "base.html" %} {% load static %} {% block title %}Setup Features - {{
+project.name }}{% endblock %} {% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center text-sm text-gray-500 mb-4">
+        <a href="{% url 'projects:list' %}" class="hover:text-gray-700"
+          >Projects</a
+        >
+        <svg class="mx-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <span class="text-gray-900">{{ project.name }}</span>
+        <svg class="mx-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <span class="text-blue-600">Feature Setup</span>
+      </div>
+
+      <h1 class="text-3xl font-bold text-gray-900">Enable Project Features</h1>
+      <p class="mt-2 text-gray-600">
+        Choose which features you'd like to enable for your project. You can
+        always change these settings later.
+      </p>
+    </div>
+
+    <!-- Feature Setup Form -->
+    <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+      <div class="px-6 py-8">
+        <form method="post" class="space-y-8">
+          {% csrf_token %}
+
+          <!-- Feature Selection -->
+          <div>
+            <h3 class="text-lg font-medium text-gray-900 mb-4">
+              Available Features
+            </h3>
+            <div class="space-y-4">
+              {% for choice in form.features %}
+              <div class="relative flex items-start">
+                <div class="flex items-center h-5">{{ choice.tag }}</div>
+                <div class="ml-3 text-sm">
+                  <label
+                    for="{{ choice.id_for_label }}"
+                    class="font-medium text-gray-700 cursor-pointer"
+                  >
+                    {{ choice.choice_label }}
+                  </label>
+                  <p class="text-gray-500 text-xs mt-1">
+                    {% if choice.choice_value == 'grants' %} Discover and track
+                    grant opportunities tailored to your project {% elif
+                    choice.choice_value == 'budget' %} Build detailed production
+                    budgets with line-item tracking {% elif choice.choice_value
+                    == 'schedule' %} Create and manage production schedules and
+                    timelines {% elif choice.choice_value == 'festivals' %}
+                    Research film festivals and manage submission workflows {%
+                    elif choice.choice_value == 'script' %} Analyze scripts and
+                    generate production breakdowns {% endif %}
+                  </p>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+
+            {% if form.features.errors %}
+            <div class="mt-2 text-sm text-red-600">
+              {{ form.features.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Feature Descriptions -->
+          <div class="bg-gray-50 rounded-lg p-6">
+            <h4 class="text-md font-medium text-gray-900 mb-3">
+              What do these features include?
+            </h4>
+            <div class="grid md:grid-cols-2 gap-4 text-sm">
+              <div class="space-y-3">
+                <div>
+                  <h5 class="font-medium text-gray-800">Grant Discovery</h5>
+                  <p class="text-gray-600">
+                    AI-powered matching to relevant grants, deadline tracking,
+                    application management
+                  </p>
+                </div>
+                <div>
+                  <h5 class="font-medium text-gray-800">Budget Builder</h5>
+                  <p class="text-gray-600">
+                    Line-item budgets, cost tracking, variance reporting,
+                    funding allocation
+                  </p>
+                </div>
+                <div>
+                  <h5 class="font-medium text-gray-800">Production Schedule</h5>
+                  <p class="text-gray-600">
+                    Day-by-day scheduling, resource allocation, timeline
+                    management
+                  </p>
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div>
+                  <h5 class="font-medium text-gray-800">Festival Research</h5>
+                  <p class="text-gray-600">
+                    Festival database, submission tracking, deadline management
+                  </p>
+                </div>
+                <div>
+                  <h5 class="font-medium text-gray-800">Script Analysis</h5>
+                  <p class="text-gray-600">
+                    Scene breakdowns, character analysis, production
+                    requirements
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex justify-between pt-6 border-t border-gray-200">
+            <a
+              href="{% url 'projects:detail' project_id=project.id %}"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Skip for Now
+            </a>
+
+            <button
+              type="submit"
+              class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Enable Selected Features
+              <svg
+                class="ml-2 -mr-1 w-4 h-4"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .feature-checkbox {
+    @apply h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500;
+  }
+</style>
+{% endblock %}

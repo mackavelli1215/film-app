@@ -1,0 +1,273 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Grant Database{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-50">
+    <!-- Header -->
+    <div class="bg-white border-b border-gray-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="py-6">
+                <div class="md:flex md:items-center md:justify-between">
+                    <div class="flex-1 min-w-0">
+                        <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
+                            Grant Database
+                        </h1>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Discover funding opportunities for your film projects
+                        </p>
+                    </div>
+                    <div class="mt-4 flex md:mt-0 md:ml-4">
+                        <a href="{% url 'projects:create' %}" 
+                           class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                            <svg class="mr-2 -ml-1 h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                            </svg>
+                            New Project
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Stats Overview -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Available Grants</dt>
+                                <dd class="text-lg font-medium text-gray-900">{{ total_grants }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Closing Soon</dt>
+                                <dd class="text-lg font-medium text-gray-900">{{ closing_soon }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-6a1 1 0 00-1-1H9a1 1 0 00-1 1v6a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clip-rule="evenodd"></path>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Your Projects</dt>
+                                <dd class="text-lg font-medium text-gray-900">{{ user_projects.count }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search and Filters -->
+        <div class="bg-white shadow rounded-lg mb-8">
+            <div class="px-6 py-4 border-b border-gray-200">
+                <h3 class="text-lg font-medium text-gray-900">Search & Filter Grants</h3>
+            </div>
+            <div class="p-6">
+                <form method="get" hx-get="{% url 'grants:filter' %}" hx-target="#grants-list" hx-trigger="change, keyup delay:500ms from:input[name='search']">
+                    <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-5">
+                        <!-- Search -->
+                        <div class="lg:col-span-2">
+                            <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+                            <input type="text" 
+                                   name="search" 
+                                   id="search"
+                                   value="{{ current_filters.search }}"
+                                   placeholder="Search grants, organizations..."
+                                   class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+
+                        <!-- Grant Type -->
+                        <div>
+                            <label for="grant_type" class="block text-sm font-medium text-gray-700">Grant Type</label>
+                            <select name="grant_type" id="grant_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">All Types</option>
+                                {% for value, label in grant_types %}
+                                    <option value="{{ value }}" {% if current_filters.grant_type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Funding Type -->
+                        <div>
+                            <label for="funding_type" class="block text-sm font-medium text-gray-700">Funding Type</label>
+                            <select name="funding_type" id="funding_type" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <option value="">All Funding</option>
+                                {% for value, label in funding_types %}
+                                    <option value="{{ value }}" {% if current_filters.funding_type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <!-- Amount Range -->
+                        <div class="lg:col-span-1">
+                            <label class="block text-sm font-medium text-gray-700">Amount Range</label>
+                            <div class="mt-1 grid grid-cols-2 gap-2">
+                                <input type="number" 
+                                       name="min_amount" 
+                                       placeholder="Min $"
+                                       value="{{ current_filters.min_amount }}"
+                                       class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                <input type="number" 
+                                       name="max_amount" 
+                                       placeholder="Max $"
+                                       value="{{ current_filters.max_amount }}"
+                                       class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 flex justify-between">
+                        <a href="{% url 'grants:list' %}" class="text-sm text-blue-600 hover:text-blue-500">Clear all filters</a>
+                        <button type="submit" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            Apply Filters
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Grants List -->
+        <div id="grants-list">
+            {% include 'grants/partials/grant_list.html' %}
+        </div>
+    </div>
+</div>
+
+<!-- Quick Apply Modal -->
+<div id="quick-apply-modal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden">
+    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+        <div class="mt-3">
+            <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title">Apply to Grant</h3>
+            <form id="quick-apply-form">
+                {% csrf_token %}
+                <input type="hidden" id="apply-grant-id" name="grant_id">
+                
+                <div class="mb-4">
+                    <label for="apply-project" class="block text-sm font-medium text-gray-700 mb-2">Select Project</label>
+                    <select name="project_id" id="apply-project" class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <option value="">Choose a project...</option>
+                        {% for project in user_projects %}
+                            <option value="{{ project.id }}">{{ project.name }} ({{ project.get_type_display }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button type="button" onclick="closeQuickApplyModal()" class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        Cancel
+                    </button>
+                    <button type="submit" class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">
+                        Add to Project
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openQuickApplyModal(grantId, grantTitle) {
+    document.getElementById('apply-grant-id').value = grantId;
+    document.getElementById('modal-title').textContent = `Apply to: ${grantTitle}`;
+    document.getElementById('quick-apply-modal').classList.remove('hidden');
+}
+
+function closeQuickApplyModal() {
+    document.getElementById('quick-apply-modal').classList.add('hidden');
+    document.getElementById('quick-apply-form').reset();
+}
+
+// Handle quick apply form submission
+document.getElementById('quick-apply-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const grantId = formData.get('grant_id');
+    
+    fetch(`/grants/apply/${grantId}/`, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert(data.message);
+            closeQuickApplyModal();
+            // Optionally refresh the grants list
+            htmx.trigger('#grants-list', 'refresh');
+        } else {
+            alert(data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    });
+});
+
+// Handle bookmark clicks
+function toggleBookmark(grantId, element) {
+    fetch(`/grants/bookmark/${grantId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            const icon = element.querySelector('svg');
+            if (data.bookmarked) {
+                icon.classList.add('text-yellow-500');
+                icon.classList.remove('text-gray-400');
+            } else {
+                icon.classList.add('text-gray-400');
+                icon.classList.remove('text-yellow-500');
+            }
+        }
+    });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,424 @@
+{% extends "base.html" %} {% load static %} {% block title %}Grants - {{
+project.name }}{% endblock %} {% block content %}
+<div class="min-h-screen bg-gray-50">
+  {% if not grants_enabled %}
+  <!-- Feature Not Enabled -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow rounded-lg p-8 text-center">
+      <div
+        class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 mb-4"
+      >
+        <svg
+          class="h-6 w-6 text-blue-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"
+          />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">
+        Grant Discovery Not Enabled
+      </h3>
+      <p class="text-gray-600 mb-6">
+        Enable grant discovery to find and track funding opportunities for your
+        project.
+      </p>
+      <a
+        href="{% url 'projects:feature_setup' project_id=project.id %}"
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+      >
+        Enable Grant Discovery
+      </a>
+    </div>
+  </div>
+  {% elif setup_needed %}
+  <!-- Setup Required -->
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="bg-white shadow rounded-lg p-8 text-center">
+      <div
+        class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-yellow-100 mb-4"
+      >
+        <svg
+          class="h-6 w-6 text-yellow-600"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+          />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+          />
+        </svg>
+      </div>
+      <h3 class="text-lg font-medium text-gray-900 mb-2">
+        Complete Grant Setup
+      </h3>
+      <p class="text-gray-600 mb-6">
+        Configure your project details and grant preferences to start
+        discovering funding opportunities.
+      </p>
+      <a
+        href="{% url 'projects:grant_setup' project_id=project.id %}"
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+      >
+        Complete Setup
+      </a>
+    </div>
+  </div>
+  {% else %}
+  <!-- Grant Discovery Interface -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex justify-between items-center">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Grant Discovery</h1>
+          <p class="mt-1 text-sm text-gray-600">
+            Find and track funding opportunities for {{ project.name }}
+          </p>
+        </div>
+        <div class="flex space-x-3">
+          <button
+            type="button"
+            hx-post="{% url 'projects:grant_discovery' project_id=project.id %}"
+            hx-target="#discovery-results"
+            hx-swap="innerHTML"
+            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700"
+          >
+            <svg
+              class="mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+            Discover Grants
+          </button>
+          <a
+            href="{% url 'projects:grant_setup' project_id=project.id %}"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50"
+          >
+            <svg
+              class="mr-2 h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            Settings
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Overview -->
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-8">
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Total Matches
+                </dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  {{ total_matches|default:0 }}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Perfect Matches
+                </dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  {{ perfect_matches|default:0 }}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Excellent Matches
+                </dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  {{ excellent_matches|default:0 }}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white overflow-hidden shadow rounded-lg">
+        <div class="p-5">
+          <div class="flex items-center">
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 bg-purple-500 rounded-full flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-white"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+            </div>
+            <div class="ml-5 w-0 flex-1">
+              <dl>
+                <dt class="text-sm font-medium text-gray-500 truncate">
+                  Applied
+                </dt>
+                <dd class="text-lg font-medium text-gray-900">
+                  {{ grant_matches|length|default:0 }}
+                </dd>
+              </dl>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grant Matches -->
+    <div id="discovery-results">
+      {% if grant_matches %}
+      <div class="bg-white shadow overflow-hidden sm:rounded-md">
+        <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+          <h3 class="text-lg leading-6 font-medium text-gray-900">
+            Grant Matches
+          </h3>
+          <p class="mt-1 max-w-2xl text-sm text-gray-500">
+            Funding opportunities matched to your project
+          </p>
+        </div>
+
+        <ul class="divide-y divide-gray-200">
+          {% for match in grant_matches %}
+          <li class="px-4 py-4 hover:bg-gray-50">
+            <div class="flex items-center justify-between">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between">
+                  <div class="flex-1">
+                    <p class="text-sm font-medium text-gray-900 truncate">
+                      {{ match.grant.title }}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                      {{ match.grant.organization }}
+                    </p>
+                  </div>
+                  <div class="flex items-center space-x-3">
+                    <!-- Match Quality Badge -->
+                    <span
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if match.match_quality == 'perfect' %}bg-green-100 text-green-800 {% elif match.match_quality == 'excellent' %}bg-blue-100 text-blue-800 {% elif match.match_quality == 'good' %}bg-yellow-100 text-yellow-800 {% else %}bg-gray-100 text-gray-800{% endif %}"
+                    >
+                      {{ match.match_score }}% Match
+                    </span>
+
+                    <!-- Status Badge -->
+                    <span
+                      class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if match.status == 'suggested' %}bg-gray-100 text-gray-800 {% elif match.status == 'interested' %}bg-blue-100 text-blue-800 {% elif match.status == 'applied' %}bg-yellow-100 text-yellow-800 {% elif match.status == 'awarded' %}bg-green-100 text-green-800 {% elif match.status == 'rejected' %}bg-red-100 text-red-800 {% endif %}"
+                    >
+                      {{ match.get_status_display }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="mt-2 flex items-center text-sm text-gray-500">
+                  <svg
+                    class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  <span
+                    >Deadline: {{ match.grant.deadline|date:"M d, Y" }}</span
+                  >
+
+                  {% if match.grant.amount_min or match.grant.amount_max %}
+                  <span class="mx-2">•</span>
+                  <svg
+                    class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"
+                    ></path>
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                  <span>
+                    {% if match.grant.amount_min and match.grant.amount_max %}
+                    ${{ match.grant.amount_min|floatformat:0 }} - ${{
+                    match.grant.amount_max|floatformat:0 }} {% elif
+                    match.grant.amount_min %} ${{
+                    match.grant.amount_min|floatformat:0 }}+ {% elif
+                    match.grant.amount_max %} Up to ${{
+                    match.grant.amount_max|floatformat:0 }} {% endif %}
+                  </span>
+                  {% endif %}
+                </div>
+
+                <div class="mt-2">
+                  <p class="text-sm text-gray-600">
+                    {{ match.match_reasoning|truncatewords:20 }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="ml-4 flex-shrink-0">
+                <button
+                  type="button"
+                  hx-get="{% url 'projects:grant_match_detail' project_id=project.id match_id=match.id %}"
+                  hx-target="#modal-container"
+                  hx-swap="innerHTML"
+                  class="text-blue-600 hover:text-blue-500 text-sm font-medium"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% else %}
+      <div class="text-center py-12">
+        <svg
+          class="mx-auto h-12 w-12 text-gray-400"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          />
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">
+          No grant matches found
+        </h3>
+        <p class="mt-1 text-sm text-gray-500">
+          Click "Discover Grants" to search for funding opportunities.
+        </p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Modal Container -->
+<div id="modal-container"></div>
+{% endblock %}

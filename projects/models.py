@@ -9,6 +9,7 @@ class Project(models.Model):
         ('short', 'Short Film'),
         ('documentary', 'Documentary'),
         ('series', 'TV Series'),
+        ('web_series', 'Web Series'),
         ('commercial', 'Commercial'),
         ('music_video', 'Music Video'),
     ]
@@ -38,9 +39,10 @@ class Project(models.Model):
     
     BUDGET_RANGES = [
         ('micro', 'Micro ($0-50K)'),
-        ('low', 'Low Budget ($50K-1M)'),
-        ('medium', 'Medium Budget ($1M-20M)'),
-        ('high', 'High Budget ($20M+)'),
+        ('low', 'Low Budget ($50K-250K)'),
+        ('medium', 'Medium Budget ($250K-1M)'),
+        ('high', 'High Budget ($1M-5M)'),
+        ('major', 'Major Budget ($5M+)'),
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -54,6 +56,27 @@ class Project(models.Model):
     timeline = models.JSONField(default=dict, blank=True)  # Start date, end date, milestones
     script_file_url = models.URLField(blank=True, null=True)
     metadata = models.JSONField(default=dict, blank=True)  # Additional project info
+    
+    # Core project data for grant feature (NEW)
+    genres = models.JSONField(default=list, blank=True)  # Multiple genres
+    synopsis = models.TextField(blank=True)
+    themes = models.JSONField(default=list, blank=True)  # Social themes
+    production_location = models.JSONField(default=dict, blank=True)  # {country, state, city}
+    additional_locations = models.JSONField(default=list, blank=True)  # Array of locations
+    languages = models.JSONField(default=list, blank=True)  # Array of languages
+    estimated_budget = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    currency = models.CharField(max_length=3, default='USD')
+    project_stage = models.CharField(max_length=20, choices=STATUS_CHOICES, default='development')
+    company_info = models.JSONField(default=dict, blank=True)
+    team_members = models.JSONField(default=list, blank=True)  # Array of team member objects
+    diversity_flags = models.JSONField(default=list, blank=True)  # Array of diversity flags
+    
+    # Feature enablement (NEW)
+    features_enabled = models.JSONField(default=list, blank=True)  # ['grants', 'budget', 'schedule']
+    
+    # Setup status (NEW)
+    core_setup_completed = models.BooleanField(default=False)
+    
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -62,6 +85,32 @@ class Project(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class ProjectFeature(models.Model):
+    """Track feature-specific setup and status for each project"""
+    FEATURE_CHOICES = [
+        ('grants', 'Grant Discovery & Tracking'),
+        ('budget', 'Budget Builder'),
+        ('schedule', 'Production Schedule'),
+        ('festivals', 'Festival Research & Submissions'),
+        ('script', 'Script Analysis & Breakdown'),
+    ]
+    
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE, related_name='project_features')
+    feature = models.CharField(max_length=20, choices=FEATURE_CHOICES)
+    setup_completed = models.BooleanField(default=False)
+    setup_data = models.JSONField(default=dict, blank=True)  # Feature-specific setup data
+    last_run_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    class Meta:
+        unique_together = ['project', 'feature']
+    
+    def __str__(self):
+        return f"{self.project.name} - {dict(self.FEATURE_CHOICES)[self.feature]}"
 
 
 class ProjectStatus(models.Model):

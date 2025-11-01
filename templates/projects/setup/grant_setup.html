@@ -1,0 +1,375 @@
+{% extends "base.html" %} {% load static %} {% block title %}Grant Setup - {{
+project.name }}{% endblock %} {% block content %}
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="mb-8">
+      <div class="flex items-center text-sm text-gray-500 mb-4">
+        <a href="{% url 'projects:list' %}" class="hover:text-gray-700"
+          >Projects</a
+        >
+        <svg class="mx-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <span class="text-gray-900">{{ project.name }}</span>
+        <svg class="mx-2 w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+          <path
+            fill-rule="evenodd"
+            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        <span class="text-blue-600">Grant Setup</span>
+      </div>
+
+      <h1 class="text-3xl font-bold text-gray-900">Grant Discovery Setup</h1>
+      <p class="mt-2 text-gray-600">
+        Configure your project details and grant preferences to discover the
+        most relevant funding opportunities.
+      </p>
+    </div>
+
+    <form method="post" class="space-y-8">
+      {% csrf_token %}
+
+      <!-- Progress Indicator -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex items-center">
+          <div class="flex items-center text-sm text-blue-600">
+            <div
+              class="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-full"
+            >
+              <svg
+                class="w-4 h-4 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd"
+                ></path>
+              </svg>
+            </div>
+            <span class="ml-2 font-medium">Step 1: Core Project Data</span>
+          </div>
+          <div class="flex-1 h-px bg-gray-200 mx-4"></div>
+          <div class="flex items-center text-sm text-blue-600">
+            <div
+              class="flex items-center justify-center w-8 h-8 bg-blue-600 rounded-full"
+            >
+              <span class="text-white font-medium">2</span>
+            </div>
+            <span class="ml-2 font-medium">Step 2: Grant Preferences</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid lg:grid-cols-2 gap-8">
+        <!-- Core Project Data -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+          <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">
+              Core Project Information
+            </h3>
+            <p class="mt-1 text-sm text-gray-600">
+              Additional details needed for grant matching
+            </p>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Genres -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Genres</label
+              >
+              <div class="grid grid-cols-2 gap-2">
+                {% for choice in core_data_form.genres_list %}
+                <div class="flex items-center">
+                  {{ choice.tag }}
+                  <label
+                    for="{{ choice.id_for_label }}"
+                    class="ml-2 text-sm text-gray-700 cursor-pointer"
+                  >
+                    {{ choice.choice_label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Themes -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Social Themes</label
+              >
+              <div class="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto">
+                {% for choice in core_data_form.themes_list %}
+                <div class="flex items-center">
+                  {{ choice.tag }}
+                  <label
+                    for="{{ choice.id_for_label }}"
+                    class="ml-2 text-sm text-gray-700 cursor-pointer"
+                  >
+                    {{ choice.choice_label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Production Location -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Primary Production Location</label
+              >
+              <div class="grid grid-cols-1 gap-3">
+                {{ core_data_form.production_country }} {{
+                core_data_form.production_state }} {{
+                core_data_form.production_city }}
+              </div>
+            </div>
+
+            <!-- Languages -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Languages</label
+              >
+              <div class="grid grid-cols-2 gap-2">
+                {% for choice in core_data_form.languages_list %}
+                <div class="flex items-center">
+                  {{ choice.tag }}
+                  <label
+                    for="{{ choice.id_for_label }}"
+                    class="ml-2 text-sm text-gray-700 cursor-pointer"
+                  >
+                    {{ choice.choice_label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Diversity Flags -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >Diversity & Inclusion</label
+              >
+              <div class="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto">
+                {% for choice in core_data_form.diversity_flags_list %}
+                <div class="flex items-center">
+                  {{ choice.tag }}
+                  <label
+                    for="{{ choice.id_for_label }}"
+                    class="ml-2 text-sm text-gray-700 cursor-pointer"
+                  >
+                    {{ choice.choice_label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Grant Preferences -->
+        <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+          <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+            <h3 class="text-lg font-medium text-gray-900">Grant Preferences</h3>
+            <p class="mt-1 text-sm text-gray-600">
+              Configure your grant discovery preferences
+            </p>
+          </div>
+
+          <div class="p-6 space-y-6">
+            <!-- Funding Types -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >{{ grant_prefs_form.preferred_funding_types.label }}</label
+              >
+              <div class="grid grid-cols-2 gap-2">
+                {% for choice in grant_prefs_form.preferred_funding_types %}
+                <div class="flex items-center">
+                  {{ choice.tag }}
+                  <label
+                    for="{{ choice.id_for_label }}"
+                    class="ml-2 text-sm text-gray-700 cursor-pointer"
+                  >
+                    {{ choice.choice_label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Funding Priorities -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >{{ grant_prefs_form.funding_priorities.label }}</label
+              >
+              <div class="grid grid-cols-1 gap-2">
+                {% for choice in grant_prefs_form.funding_priorities %}
+                <div class="flex items-center">
+                  {{ choice.tag }}
+                  <label
+                    for="{{ choice.id_for_label }}"
+                    class="ml-2 text-sm text-gray-700 cursor-pointer"
+                  >
+                    {{ choice.choice_label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Amount Range -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  for="{{ grant_prefs_form.min_amount.id_for_label }}"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {{ grant_prefs_form.min_amount.label }}
+                </label>
+                {{ grant_prefs_form.min_amount }}
+              </div>
+              <div>
+                <label
+                  for="{{ grant_prefs_form.max_amount.id_for_label }}"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {{ grant_prefs_form.max_amount.label }}
+                </label>
+                {{ grant_prefs_form.max_amount }}
+              </div>
+            </div>
+
+            <!-- Application Complexity -->
+            <div>
+              <label
+                for="{{ grant_prefs_form.max_application_complexity.id_for_label }}"
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
+                {{ grant_prefs_form.max_application_complexity.label }}
+              </label>
+              {{ grant_prefs_form.max_application_complexity }}
+            </div>
+
+            <!-- Lead Time -->
+            <div>
+              <label
+                for="{{ grant_prefs_form.lead_time_preference.id_for_label }}"
+                class="block text-sm font-medium text-gray-700 mb-1"
+              >
+                {{ grant_prefs_form.lead_time_preference.label }}
+              </label>
+              {{ grant_prefs_form.lead_time_preference }}
+              <p class="mt-1 text-xs text-gray-500">
+                {{ grant_prefs_form.lead_time_preference.help_text }}
+              </p>
+            </div>
+
+            <!-- Preferred Regions -->
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2"
+                >{{ grant_prefs_form.preferred_regions.label }}</label
+              >
+              <div class="grid grid-cols-1 gap-2">
+                {% for choice in grant_prefs_form.preferred_regions %}
+                <div class="flex items-center">
+                  {{ choice.tag }}
+                  <label
+                    for="{{ choice.id_for_label }}"
+                    class="ml-2 text-sm text-gray-700 cursor-pointer"
+                  >
+                    {{ choice.choice_label }}
+                  </label>
+                </div>
+                {% endfor %}
+              </div>
+            </div>
+
+            <!-- Auto Apply Settings -->
+            <div class="border-t pt-4">
+              <div class="flex items-center">
+                {{ grant_prefs_form.auto_apply_enabled }}
+                <label
+                  for="{{ grant_prefs_form.auto_apply_enabled.id_for_label }}"
+                  class="ml-2 text-sm font-medium text-gray-700"
+                >
+                  {{ grant_prefs_form.auto_apply_enabled.label }}
+                </label>
+              </div>
+
+              <div class="mt-3">
+                <label
+                  for="{{ grant_prefs_form.auto_apply_threshold.id_for_label }}"
+                  class="block text-sm font-medium text-gray-700 mb-1"
+                >
+                  {{ grant_prefs_form.auto_apply_threshold.label }}
+                </label>
+                {{ grant_prefs_form.auto_apply_threshold }}
+                <p class="mt-1 text-xs text-gray-500">
+                  {{ grant_prefs_form.auto_apply_threshold.help_text }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="bg-white shadow rounded-lg p-6">
+        <div class="flex justify-between">
+          <a
+            href="{% url 'projects:detail' project_id=project.id %}"
+            class="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Cancel
+          </a>
+
+          <button
+            type="submit"
+            class="inline-flex items-center px-6 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            Complete Grant Setup
+            <svg
+              class="ml-2 -mr-1 w-4 h-4"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<style>
+  .form-input {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+  }
+
+  .form-select {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+  }
+
+  .form-textarea {
+    @apply block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+  }
+
+  .form-checkbox {
+    @apply h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500;
+  }
+</style>
+{% endblock %}

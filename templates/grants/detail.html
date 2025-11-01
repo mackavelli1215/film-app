@@ -1,0 +1,541 @@
+{% extends "base.html" %} {% load static %} {% block title %}{{ grant.title }} -
+Grant Details{% endblock %} {% block content %}
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div class="bg-white border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="py-6">
+        <!-- Breadcrumb -->
+        <nav class="flex mb-4" aria-label="Breadcrumb">
+          <ol class="inline-flex items-center space-x-1 md:space-x-3">
+            <li class="inline-flex items-center">
+              <a
+                href="{% url 'grants:list' %}"
+                class="text-gray-700 hover:text-gray-900 inline-flex items-center"
+              >
+                <svg
+                  class="w-4 h-4 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"
+                  ></path>
+                </svg>
+                Grants
+              </a>
+            </li>
+            <li>
+              <div class="flex items-center">
+                <svg
+                  class="w-6 h-6 text-gray-400"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="ml-1 text-gray-500 md:ml-2"
+                  >{{ grant.title }}</span
+                >
+              </div>
+            </li>
+          </ol>
+        </nav>
+
+        <!-- Header Content -->
+        <div class="md:flex md:items-center md:justify-between">
+          <div class="flex-1 min-w-0">
+            <h1 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl">
+              {{ grant.title }}
+            </h1>
+            <div class="mt-2 flex items-center text-sm text-gray-500">
+              <span class="font-medium">{{ grant.organization }}</span>
+              <span class="mx-2">•</span>
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if grant.grant_type == 'development' %}bg-purple-100 text-purple-800 {% elif grant.grant_type == 'production' %}bg-blue-100 text-blue-800 {% elif grant.grant_type == 'post_production' %}bg-green-100 text-green-800 {% elif grant.grant_type == 'distribution' %}bg-yellow-100 text-yellow-800 {% else %}bg-gray-100 text-gray-800{% endif %}"
+              >
+                {{ grant.get_grant_type_display }}
+              </span>
+              {% if grant.funding_type %}
+              <span class="mx-2">•</span>
+              <span
+                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800"
+              >
+                {{ grant.get_funding_type_display }}
+              </span>
+              {% endif %}
+            </div>
+          </div>
+          <div class="mt-4 flex md:mt-0 md:ml-4 space-x-3">
+            {% if grant.url %}
+            <a
+              href="{{ grant.url }}"
+              target="_blank"
+              class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            >
+              <svg
+                class="mr-2 -ml-1 h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                />
+              </svg>
+              Visit Grant Page
+            </a>
+            {% endif %} {% if user_projects %}
+            <button
+              type="button"
+              onclick="openQuickApplyModal('{{ grant.id }}', '{{ grant.title|escapejs }}')"
+              class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+            >
+              <svg
+                class="mr-2 -ml-1 h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                />
+              </svg>
+              Apply with Project
+            </button>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Main Content -->
+      <div class="lg:col-span-2 space-y-8">
+        <!-- Description -->
+        {% if grant.description %}
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Description</h3>
+          <div class="prose max-w-none text-gray-600">
+            {{ grant.description|linebreaks }}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Eligibility Criteria -->
+        {% if grant.eligibility_criteria %}
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Eligibility Criteria
+          </h3>
+          <div class="space-y-3">
+            {% for key, value in grant.eligibility_criteria.items %}
+            <div
+              class="flex justify-between py-2 border-b border-gray-100 last:border-b-0"
+            >
+              <span class="text-sm font-medium text-gray-600"
+                >{{ key|title|cut:"_" }}:</span
+              >
+              <span class="text-sm text-gray-900">{{ value }}</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Application Requirements -->
+        {% if grant.application_requirements %}
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Application Requirements
+          </h3>
+          <div class="space-y-3">
+            {% for key, value in grant.application_requirements.items %}
+            <div class="flex items-start py-2">
+              <div class="flex-shrink-0 w-5 h-5 mt-0.5">
+                <svg
+                  class="w-5 h-5 text-blue-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <p class="text-sm font-medium text-gray-900">
+                  {{ key|title|cut:"_" }}
+                </p>
+                <p class="text-sm text-gray-600">{{ value }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Selection Criteria -->
+        {% if grant.selection_criteria %}
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Selection Criteria
+          </h3>
+          <ul class="space-y-2">
+            {% for criterion in grant.selection_criteria %}
+            <li class="flex items-start">
+              <div
+                class="flex-shrink-0 w-2 h-2 bg-blue-500 rounded-full mt-2"
+              ></div>
+              <span class="ml-3 text-sm text-gray-600">{{ criterion }}</span>
+            </li>
+            {% endfor %}
+          </ul>
+        </div>
+        {% endif %}
+
+        <!-- Application Process -->
+        {% if grant.application_process %}
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Application Process
+          </h3>
+          <div class="prose max-w-none text-gray-600">
+            {{ grant.application_process|linebreaks }}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Your Project Matches -->
+        {% if existing_matches %}
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Your Project Matches
+          </h3>
+          <div class="space-y-4">
+            {% for match in existing_matches %}
+            <div class="border border-gray-200 rounded-lg p-4">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="text-md font-medium text-gray-900">
+                    {{ match.project.name }}
+                  </h4>
+                  <p class="text-sm text-gray-600">
+                    {{ match.project.get_type_display }}
+                  </p>
+                </div>
+                <div class="flex items-center space-x-3">
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if match.match_quality == 'perfect' %}bg-green-100 text-green-800 {% elif match.match_quality == 'excellent' %}bg-blue-100 text-blue-800 {% elif match.match_quality == 'good' %}bg-yellow-100 text-yellow-800 {% else %}bg-gray-100 text-gray-800{% endif %}"
+                  >
+                    {{ match.match_score }}% Match
+                  </span>
+                  <span
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium {% if match.status == 'suggested' %}bg-gray-100 text-gray-800 {% elif match.status == 'interested' %}bg-blue-100 text-blue-800 {% elif match.status == 'applied' %}bg-yellow-100 text-yellow-800 {% elif match.status == 'awarded' %}bg-green-100 text-green-800 {% elif match.status == 'rejected' %}bg-red-100 text-red-800 {% endif %}"
+                  >
+                    {{ match.get_status_display }}
+                  </span>
+                </div>
+              </div>
+              <div class="mt-2">
+                <p class="text-sm text-gray-600">{{ match.match_reasoning }}</p>
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
+      <!-- Sidebar -->
+      <div class="space-y-6">
+        <!-- Grant Details Card -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Grant Details</h3>
+          <dl class="space-y-4">
+            <!-- Deadline -->
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Deadline
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {{ grant.deadline|date:"F d, Y" }}
+                <div class="mt-1">
+                  {% if days_until_deadline > 0 %}
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {% if days_until_deadline <= 7 %}bg-red-100 text-red-800 {% elif days_until_deadline <= 30 %}bg-orange-100 text-orange-800 {% else %}bg-green-100 text-green-800{% endif %}"
+                  >
+                    {{ days_until_deadline }} day{{
+                    days_until_deadline|pluralize }} remaining
+                  </span>
+                  {% else %}
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800"
+                  >
+                    Deadline passed
+                  </span>
+                  {% endif %}
+                </div>
+              </dd>
+            </div>
+
+            <!-- Amount -->
+            {% if grant.amount_min or grant.amount_max %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Grant Amount
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {% if grant.amount_min and grant.amount_max %} ${{
+                grant.amount_min|floatformat:0 }} - ${{
+                grant.amount_max|floatformat:0 }} {% elif grant.amount_min %}
+                ${{ grant.amount_min|floatformat:0 }}+ {% elif grant.amount_max
+                %} Up to ${{ grant.amount_max|floatformat:0 }} {% endif %} {{
+                grant.currency }}
+              </dd>
+            </div>
+            {% endif %}
+
+            <!-- Annual Cycle -->
+            {% if grant.annual_cycle %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Frequency
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900">Annual Grant</dd>
+            </div>
+            {% endif %}
+
+            <!-- Success Rate -->
+            {% if grant.success_rate %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Success Rate
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {{ grant.success_rate }}%
+              </dd>
+            </div>
+            {% endif %}
+
+            <!-- Project Types -->
+            {% if grant.project_types %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Supported Project Types
+              </dt>
+              <dd class="mt-1">
+                <div class="flex flex-wrap gap-1">
+                  {% for project_type in grant.project_types %}
+                  <span
+                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-700"
+                  >
+                    {{ project_type|title }}
+                  </span>
+                  {% endfor %}
+                </div>
+              </dd>
+            </div>
+            {% endif %}
+
+            <!-- Location Restrictions -->
+            {% if grant.location_restrictions %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                Location Requirements
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900">
+                {% for key, value in grant.location_restrictions.items %}
+                <div>{{ key|title }}: {{ value }}</div>
+                {% endfor %}
+              </dd>
+            </div>
+            {% endif %}
+          </dl>
+        </div>
+
+        <!-- Contact Information -->
+        {% if grant.contact_info %}
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Contact Information
+          </h3>
+          <dl class="space-y-3">
+            {% for key, value in grant.contact_info.items %}
+            <div>
+              <dt
+                class="text-xs font-medium text-gray-500 uppercase tracking-wide"
+              >
+                {{ key|title|cut:"_" }}
+              </dt>
+              <dd class="mt-1 text-sm text-gray-900">{{ value }}</dd>
+            </div>
+            {% endfor %}
+          </dl>
+        </div>
+        {% endif %}
+
+        <!-- Tags -->
+        {% if grant.tags %}
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Tags</h3>
+          <div class="flex flex-wrap gap-2">
+            {% for tag in grant.tags %}
+            <span
+              class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+            >
+              {{ tag|title }}
+            </span>
+            {% endfor %}
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Related Grants -->
+        <div class="bg-white shadow rounded-lg p-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">Similar Grants</h3>
+          <p class="text-sm text-gray-500">
+            Coming soon - Related grant suggestions based on this grant.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Apply Modal (reuse from list page) -->
+<div
+  id="quick-apply-modal"
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 hidden"
+>
+  <div
+    class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white"
+  >
+    <div class="mt-3">
+      <h3 class="text-lg font-medium text-gray-900 mb-4" id="modal-title">
+        Apply to Grant
+      </h3>
+      <form id="quick-apply-form">
+        {% csrf_token %}
+        <input
+          type="hidden"
+          id="apply-grant-id"
+          name="grant_id"
+          value="{{ grant.id }}"
+        />
+
+        <div class="mb-4">
+          <label
+            for="apply-project"
+            class="block text-sm font-medium text-gray-700 mb-2"
+            >Select Project</label
+          >
+          <select
+            name="project_id"
+            id="apply-project"
+            class="block w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+          >
+            <option value="">Choose a project...</option>
+            {% for project in user_projects %}
+            <option value="{{ project.id }}">
+              {{ project.name }} ({{ project.get_type_display }})
+            </option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="flex justify-end space-x-3">
+          <button
+            type="button"
+            onclick="closeQuickApplyModal()"
+            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+          >
+            Add to Project
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openQuickApplyModal(grantId, grantTitle) {
+    document.getElementById("apply-grant-id").value = grantId;
+    document.getElementById(
+      "modal-title"
+    ).textContent = `Apply to: ${grantTitle}`;
+    document.getElementById("quick-apply-modal").classList.remove("hidden");
+  }
+
+  function closeQuickApplyModal() {
+    document.getElementById("quick-apply-modal").classList.add("hidden");
+    document.getElementById("quick-apply-form").reset();
+  }
+
+  // Handle quick apply form submission
+  document
+    .getElementById("quick-apply-form")
+    .addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const formData = new FormData(this);
+      const grantId = formData.get("grant_id");
+
+      fetch(`/grants/apply/${grantId}/`, {
+        method: "POST",
+        body: formData,
+        headers: {
+          "X-CSRFToken": document.querySelector("[name=csrfmiddlewaretoken]")
+            .value,
+        },
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "success") {
+            alert(data.message);
+            closeQuickApplyModal();
+            // Refresh the page to show the new match
+            location.reload();
+          } else {
+            alert(data.message);
+          }
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          alert("An error occurred. Please try again.");
+        });
+    });
+</script>
+{% endblock %}
