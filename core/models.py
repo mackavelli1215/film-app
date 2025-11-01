@@ -1,0 +1,1 @@
+# Core app doesn't need models - it's for shared utilities and views

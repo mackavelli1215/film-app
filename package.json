@@ -1,0 +1,14 @@
+{
+  "name": "filmapp",
+  "version": "1.0.0",
+  "description": "Film production management platform",
+  "scripts": {
+    "dev:css": "tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --watch",
+    "build:css": "tailwindcss -i ./static/src/input.css -o ./static/dist/output.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "postcss": "^8.4.32",
+    "autoprefixer": "^10.4.16"
+  }
+}

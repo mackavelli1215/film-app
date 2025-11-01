@@ -1,0 +1,49 @@
+<!-- Modal Component -->
+{% comment %} Usage: Include this template and trigger with HTMX {% endcomment
+%}
+
+<div
+  class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50"
+  id="{{ modal_id|default:'modal' }}"
+  x-data="{ open: true }"
+  x-show="open"
+  @click.away="open = false"
+>
+  <div
+    class="relative top-20 mx-auto p-5 border w-11/12 md:w-3/4 lg:w-1/2 shadow-lg rounded-md bg-white"
+  >
+    <!-- Modal header -->
+    <div class="flex items-center justify-between pb-3">
+      <h3 class="text-lg font-medium text-gray-900">{{ title }}</h3>
+      <button @click="open = false" class="text-gray-400 hover:text-gray-600">
+        <svg
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
+
+    <!-- Modal content -->
+    <div class="mt-2">
+      {{ content|default:'' }} {% block modal_content %}{% endblock %}
+    </div>
+
+    <!-- Modal actions -->
+    {% if actions %}
+    <div
+      class="flex items-center justify-end pt-3 border-t border-gray-200 mt-4"
+    >
+      {{ actions }}
+    </div>
+    {% endif %}
+  </div>
+</div>

@@ -1,0 +1,24 @@
+<!-- Card Component -->
+{% comment %} Usage: {% include 'components/card.html' with title="Card Title"
+%} {% endcomment %}
+
+<div class="bg-white overflow-hidden shadow-sm rounded-lg {{ class }}">
+  {% if title %}
+  <div class="px-4 py-5 sm:px-6 border-b border-gray-200">
+    <h3 class="text-lg leading-6 font-medium text-gray-900">{{ title }}</h3>
+    {% if subtitle %}
+    <p class="mt-1 max-w-2xl text-sm text-gray-500">{{ subtitle }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="px-4 py-5 sm:p-6">
+    {{ content|default:'' }} {% block card_content %}{% endblock %}
+  </div>
+
+  {% if actions %}
+  <div class="px-4 py-4 sm:px-6 bg-gray-50 border-t border-gray-200">
+    {{ actions }}
+  </div>
+  {% endif %}
+</div>
